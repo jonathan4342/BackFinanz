@@ -1,0 +1,7 @@
+# Configuración de Ruff (linter).
+
+[lint.per-file-ignores]
+# conftest.py fija DATABASE_URL como variable de entorno ANTES de importar la
+# app (para forzar SQLite en las pruebas), por lo que los imports no van al
+# inicio del archivo. Es intencional, así que ignoramos E402 aquí.
+"tests/conftest.py" = ["E402"]
