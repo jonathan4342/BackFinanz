@@ -8,7 +8,21 @@ from datetime import datetime
 
 from app.models.client import Client
 from app.models.ticket import Ticket, TicketStatus
-from app.repositories.interfaces import ClientRepository, TicketRepository
+from app.repositories.interfaces import (
+    AuditRepository,
+    ClientRepository,
+    TicketRepository,
+)
+
+
+class FakeAuditRepository(AuditRepository):
+    def __init__(self):
+        self.events: list[dict] = []
+
+    def log(self, user: str, action: str, ticket_id: int) -> None:
+        self.events.append(
+            {"user": user, "action": action, "ticket_id": ticket_id}
+        )
 
 
 class FakeClientRepository(ClientRepository):
