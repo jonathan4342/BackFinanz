@@ -37,3 +37,10 @@ class TicketRepository(ABC):
 
     @abstractmethod
     def update_status(self, ticket: Ticket, status: TicketStatus) -> Ticket: ...
+
+
+class AuditRepository(ABC):
+    """Registro de eventos de auditoría (base no relacional, ej. MongoDB)."""
+
+    @abstractmethod
+    def log(self, user: str, action: str, ticket_id: int) -> None: ...

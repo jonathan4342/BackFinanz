@@ -9,9 +9,18 @@ from typing import Annotated
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
+from app.db.mongo import get_audit_collection
 from app.db.session import get_db
+from app.repositories.audit_repository import (
+    MongoAuditRepository,
+    NullAuditRepository,
+)
 from app.repositories.client_repository import SqlAlchemyClientRepository
-from app.repositories.interfaces import ClientRepository, TicketRepository
+from app.repositories.interfaces import (
+    AuditRepository,
+    ClientRepository,
+    TicketRepository,
+)
 from app.repositories.ticket_repository import SqlAlchemyTicketRepository
 from app.services.client_service import ClientService
 from app.services.ticket_service import TicketService
@@ -27,6 +36,14 @@ def get_ticket_repository(db: DbSession) -> TicketRepository:
     return SqlAlchemyTicketRepository(db)
 
 
+def get_audit_repository() -> AuditRepository:
+    # Si Mongo no está configurado/disponible, la auditoría es no-op.
+    try:
+        return MongoAuditRepository(get_audit_collection())
+    except Exception:
+        return NullAuditRepository()
+
+
 def get_client_service(
     repo: Annotated[ClientRepository, Depends(get_client_repository)],
 ) -> ClientService:
@@ -36,8 +53,9 @@ def get_client_service(
 def get_ticket_service(
     ticket_repo: Annotated[TicketRepository, Depends(get_ticket_repository)],
     client_repo: Annotated[ClientRepository, Depends(get_client_repository)],
+    audit: Annotated[AuditRepository, Depends(get_audit_repository)],
 ) -> TicketService:
-    return TicketService(ticket_repo, client_repo)
+    return TicketService(ticket_repo, client_repo, audit)
 
 
 ClientServiceDep = Annotated[ClientService, Depends(get_client_service)]
