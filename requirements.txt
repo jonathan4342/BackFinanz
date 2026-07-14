@@ -1,0 +1,17 @@
+fastapi==0.111.0
+uvicorn[standard]==0.30.1
+sqlalchemy==2.0.30
+psycopg2-binary==2.9.9
+pydantic==2.7.4
+pydantic-settings==2.3.4
+python-dotenv==1.0.1
+
+# Auditoría (MongoDB) - Fase 6
+pymongo==4.7.3
+
+# Testing - Fase 3
+pytest==8.2.2
+httpx==0.27.0
+
+# Linter - Fase 5
+ruff==0.4.9
